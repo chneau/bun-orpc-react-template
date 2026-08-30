@@ -1,0 +1,36 @@
+{
+	"name": "bun-react-template",
+	"version": "0.1.0",
+	"scripts": {
+		"dev": "bun --hot server.ts",
+		"start": "NODE_ENV=production bun server.ts",
+		"build": "rm -rf dist; bun build --production --target=bun --outdir=dist server.ts",
+		"run-dist": "bun --cwd=dist server.js",
+		"docker-build": "docker build -t bun-react-template .",
+		"run-docker": "docker run --rm -it --net=host bun-react-template",
+		"upgrade": "bun update --latest",
+		"check": "bun run --sequential --no-exit-on-error check:clean check:deno check:oxlint check:biome check:export lint",
+		"lint": "tsc --noEmit",
+		"all": "bun run --sequential --no-exit-on-error upgrade check",
+		"check:clean": "rm -rf dist out build",
+		"check:deno": "deno fmt --use-tabs --quiet",
+		"check:oxlint": "oxlint --fix-dangerously --fix-suggestions --fix --quiet",
+		"check:biome": "timeout 3s biome check --write --unsafe .",
+		"check:export": "ts-unused-exports tsconfig.json"
+	},
+	"dependencies": {
+		"@orpc/client": "1.15.0",
+		"@orpc/server": "1.15.0",
+		"@tanstack/react-query": "^5.102.8",
+		"react": "^19.2.8",
+		"react-dom": "^19.2.8",
+		"wouter": "^3.10.0",
+		"zod": "^4.5.4"
+	},
+	"devDependencies": {
+		"@types/bun": "^1.4.0",
+		"@types/react": "^19.2.18",
+		"@types/react-dom": "^19.2.5",
+		"typescript": "^7.0.2"
+	}
+}
