@@ -7,14 +7,29 @@ import index from "./client/index.html";
 // In-memory counter for demonstration purposes (resets on restart/reload)
 let counter = 0;
 
-const hello = os
+const logged = os.use(async ({ next, path }) => {
+	const start = performance.now();
+	const procedureName = path.join("/") || "root";
+	try {
+		const result = await next();
+		const duration = (performance.now() - start).toFixed(2);
+		console.log(`[oRPC] ${procedureName} -> 200 OK (${duration}ms)`);
+		return result;
+	} catch (error) {
+		const duration = (performance.now() - start).toFixed(2);
+		console.error(`[oRPC] ${procedureName} -> ERROR (${duration}ms):`, error);
+		throw error;
+	}
+});
+
+const hello = logged
 	.input(z.string())
 	.handler(
 		async ({ input }) =>
 			`Hello ${input}, from the server! My current counter is ${counter}.`,
 	);
 
-const increment = os.handler(async () => ++counter);
+const increment = logged.handler(async () => ++counter);
 
 const router = {
 	hello,
