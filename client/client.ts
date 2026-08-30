@@ -1,6 +1,7 @@
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import type { RouterClient } from "@orpc/server";
+import { createRouterUtils } from "@orpc/tanstack-query";
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import type { AppRouter } from "../server";
 
@@ -14,16 +15,14 @@ const link = new RPCLink({
 });
 
 const client = createORPCClient<RouterClient<AppRouter>>(link);
+const orpc = createRouterUtils(client);
 
 export const useHelloQuery = (name: string) =>
-	useQuery({
-		queryKey: ["hello", name],
-		queryFn: () => client.hello(name),
-	});
+	useQuery(orpc.hello.queryOptions({ input: name }));
 
 export const useIncrementMutation = () =>
-	useMutation({
-		mutationKey: ["increment"],
-		mutationFn: () => client.increment(),
-		onSuccess: () => qc.invalidateQueries({ queryKey: ["hello"] }),
-	});
+	useMutation(
+		orpc.increment.mutationOptions({
+			onSuccess: () => qc.invalidateQueries({ queryKey: orpc.hello.key() }),
+		}),
+	);
