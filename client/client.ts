@@ -7,9 +7,7 @@ import type { AppRouter } from "../server";
 
 export const qc = new QueryClient();
 
-const link = new RPCLink({
-	url: `${window.location.origin}/api`,
-});
+const link = new RPCLink({ url: `${window.location.origin}/api` });
 
 const client = createORPCClient<RouterClient<AppRouter>>(link);
 const orpc = createRouterUtils(client);
