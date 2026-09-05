@@ -7,17 +7,21 @@ import index from "./client/index.html";
 // In-memory counter for demonstration purposes (resets on restart/reload)
 let counter = 0;
 
+const elapsed = (start: number) =>
+	`${(performance.now() - start).toFixed(2)}ms`;
+
 const logged = os.use(async ({ next, path }) => {
 	const start = performance.now();
 	const procedureName = path.join("/") || "root";
 	try {
 		const result = await next();
-		const duration = (performance.now() - start).toFixed(2);
-		console.log(`[oRPC] ${procedureName} -> 200 OK (${duration}ms)`);
+		console.log(`[oRPC] ${procedureName} -> 200 OK (${elapsed(start)})`);
 		return result;
 	} catch (error) {
-		const duration = (performance.now() - start).toFixed(2);
-		console.error(`[oRPC] ${procedureName} -> ERROR (${duration}ms):`, error);
+		console.error(
+			`[oRPC] ${procedureName} -> ERROR (${elapsed(start)}):`,
+			error,
+		);
 		throw error;
 	}
 });
